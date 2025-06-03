@@ -1,5 +1,14 @@
 # Propylon Document Manager Assessment
 
+<div style="border: 1px solid #8253FD; padding:5px; margin-bottom: 16px; background-color:rgb(228, 220, 250);">
+<h3>Documentation</h3>
+<ul>
+   <li><a href="./docs/developer_instructions.md">Developer instructions</a>
+   <li><a href="./docs/user_instructions.md">User Guide</a></li>
+   <li><a href="./modifications.md">Project bootstrap modifications</a></li>
+</ul>
+</div>
+
 The Propylon Document Management Technical Assessment is a simple (and incomplete) web application consisting of a basic API backend and a React based client.  This API/client can be used as a bootstrap to implement the specific features requested in the assessment description. 
 
 ## Getting Started
