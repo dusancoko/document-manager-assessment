@@ -170,8 +170,154 @@ Refer to the API documentation or examine the `urls.py` file for complete endpoi
 
 Monitor application logs for debugging information during development and testing.
 
-## Additional Resources
+## Frontend Application Setup
 
-- Django documentation: [https://docs.djangoproject.com/](https://docs.djangoproject.com/)
-- Django REST Framework: [https://www.django-rest-framework.org/](https://www.django-rest-framework.org/)
-- Project repository: [https://github.com/dusancoko/document-manager-assessment](https://github.com/dusancoko/document-manager-assessment)
+The frontend is a React application that provides a modern web interface for the document management system.
+
+### Prerequisites
+
+Ensure you have Node.js and npm installed:
+
+```bash
+# Install Node.js (version 16 or higher recommended)
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Verify installation
+node --version
+npm --version
+```
+
+### Installation
+
+1. **Navigate to the frontend directory**:
+   ```bash
+   cd document-manager-assessment/client/doc-manager
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Install additional required packages** (if not already in package.json):
+   ```bash
+   npm install react-router-dom@5.3.4
+   npm install react-hook-form
+   npm install dayjs
+   npm install axios
+   npm install @fortawesome/fontawesome-free
+   npm install @fortawesome/react-fontawesome
+   npm install @fortawesome/free-solid-svg-icons
+   npm install react-diff-viewer
+   ```
+
+### Configuration
+
+**API Configuration**: The frontend is configured to connect to the backend API at `http://127.0.0.1:8001/api`. This is set in `src/api/client.js`.
+
+### Development Server
+
+Start the React development server:
+
+```bash
+npm start
+```
+
+The frontend application will be accessible at: `http://localhost:3000`
+
+
+### Frontend Features
+
+The React application provides:
+
+- **Authentication System**: Login/logout functionality
+- **File Management**: Upload, download, and organize files
+- **Version Control**: Create and manage file versions
+- **File Sharing**: Share files with other users with permission controls
+- **Version Comparison**: Side-by-side diff view for supported file types
+- **Responsive Design**: Mobile-friendly interface
+
+### Application Structure
+
+```
+frontend/
+├── public/
+│   ├── index.html
+│   └── Propylon.svg          # Company logo
+├── src/
+│   ├── api/
+│   │   └── client.js         # Axios API client configuration
+│   ├── components/
+│   │   ├── Layout.js         # Main layout wrapper
+│   │   ├── FileShareModal.js # File sharing modal
+│   │   └── PropylonLogo.js   # Logo component
+│   ├── context/
+│   │   ├── AuthContext.js    # Authentication state management
+│   │   └── PrivateRoute.js   # Protected route component
+│   ├── pages/
+│   │   ├── LoginPage.js      # User authentication
+│   │   ├── MyFilesPage.js    # User's files dashboard
+│   │   ├── SharedWithMePage.js # Shared files view
+│   │   ├── UploadPage.js     # File upload interface
+│   │   └── CompareVersionsPage.js # Version comparison
+│   ├── App.js               # Main application component
+│   ├── index.js             # Application entry point
+│   └── custom-ui.css        # Custom styling
+```
+
+### Testing the Frontend
+
+1. **Ensure backend is running** on port 8001
+2. **Start frontend development server** on port 3000
+3. **Navigate to** `http://localhost:3000`
+4. **Login** using credentials created with the backend user management commands
+
+### Frontend Development Workflow
+
+1. **Start both servers**:
+   ```bash
+   # Terminal 1 - Backend
+   cd document-manager-assessment
+   source .env_python3.11/bin/activate
+   make plain-serve
+
+   # Terminal 2 - Frontend
+   cd document-manager-assessment/client/doc-manager
+   npm start
+   ```
+
+2. **Development cycle**:
+   - Make changes to React components
+   - The development server auto-reloads on file changes
+   - Test functionality in the browser
+   - Check browser console for any errors
+
+3. **API Integration**:
+   - Frontend communicates with backend via REST API
+   - Authentication tokens are stored in localStorage
+   - All API calls include proper authentication headers
+
+### Troubleshooting Frontend Issues
+
+#### Common Problems
+
+- **CORS errors**: Ensure backend allows frontend origin
+- **API connection refused**: Verify backend server is running on port 8001
+- **Authentication issues**: Check if user credentials are valid
+- **Missing dependencies**: Run `npm install` to install all packages
+- **Port conflicts**: Change ports if 3000 is occupied
+
+#### Debug Steps
+
+1. **Check browser console** for JavaScript errors
+2. **Verify API endpoints** are responding (use browser dev tools Network tab)
+3. **Confirm backend API** is accessible at `http://127.0.0.1:8001/api`
+4. **Test authentication** by logging in through Django admin first
+
+
+4. **Access the application**:
+   - Frontend: `http://localhost:3000`
+   - Backend Admin: `http://127.0.0.1:8001/admin`
+   - API Endpoints: `http://127.0.0.1:8001/api/`
+
