@@ -15,6 +15,8 @@ from urllib.parse import unquote
 from pathlib import Path
 from django.db.models import Q
 
+# Guardian imports for object-level permissions
+from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 from ..models import FileVersion
 from .serializers import FileVersionSerializer, FileUploadSerializer, SharedFileVersionSerializer
@@ -34,26 +36,20 @@ class FileVersionViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     @action(detail=False, methods=['get'], url_path='shared-with-me')
     def shared_with_me(self, request):
         """
-        Returns files that have been shared with the current user via permissions
+        Returns files that have been shared with the current user via object-level permissions
         """
         user = request.user
         
-        # Find all FileVersion objects where the user has view_fileversion permission
-        # but is not the uploader (i.e., shared files)
-        shared_files = FileVersion.objects.filter(
-            previous_version__isnull=True  # Only root files
-        ).exclude(
-            uploader=user  # Exclude files uploaded by the user
-        )
-        
-        # Filter to only files the user has permission to view
-        viewable_shared_files = []
-        for file_version in shared_files:
-            if user.has_perm("file_versions.view_fileversion", file_version):
-                viewable_shared_files.append(file_version)
+        # Use django-guardian to get files with view permission
+        shared_files = get_objects_for_user(
+            user, 
+            'file_versions.view_fileversion',
+            klass=FileVersion.objects.filter(previous_version__isnull=True),
+            accept_global_perms=False  # Only object-level permissions
+        ).exclude(uploader=user)  # Exclude files uploaded by the user
         
         # Use the shared file serializer to include permission info
-        serializer = SharedFileVersionSerializer(viewable_shared_files, many=True, context={'request': request})
+        serializer = SharedFileVersionSerializer(shared_files, many=True, context={'request': request})
         return Response(serializer.data)
 
 
@@ -72,7 +68,6 @@ class FileUploadView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
 
 class FileDownloadByNameView(APIView):
     """
@@ -117,7 +112,8 @@ class FileDownloadByNameView(APIView):
                 raise Http404("No versions available")
 
         # Check permissions: either user owns the file or has view permission
-        if file_version.uploader != user and not user.has_perm("file_versions.view_fileversion", file_version):
+        root_file = file_version.root_file or file_version
+        if file_version.uploader != user and not user.has_perm("file_versions.view_fileversion", root_file):
             return HttpResponseForbidden("You don't have permission to access this file.")
 
         file_path = file_version.file_path.path
@@ -125,7 +121,6 @@ class FileDownloadByNameView(APIView):
             raise Http404("File not found on disk")
 
         return FileResponse(open(file_path, "rb"), as_attachment=True, filename=file_version.file_name)
-
 
 
 class FileCompareView(APIView):
@@ -142,11 +137,14 @@ class FileCompareView(APIView):
 
         user = request.user
         
-        # Check permissions for both files
-        if (left.uploader != user and not user.has_perm("file_versions.view_fileversion", left)):
+        # Check permissions for both files (check root files)
+        left_root = left.root_file or left
+        right_root = right.root_file or right
+        
+        if (left.uploader != user and not user.has_perm("file_versions.view_fileversion", left_root)):
             return Response({"detail": "You don't have permission to access the left file."}, status=status.HTTP_403_FORBIDDEN)
             
-        if (right.uploader != user and not user.has_perm("file_versions.view_fileversion", right)):
+        if (right.uploader != user and not user.has_perm("file_versions.view_fileversion", right_root)):
             return Response({"detail": "You don't have permission to access the right file."}, status=status.HTTP_403_FORBIDDEN)
 
         return Response({
@@ -165,7 +163,7 @@ class FileCompareView(APIView):
 
 class FileShareView(APIView):
     """
-    API endpoint to share files with other users by granting permissions
+    API endpoint to share files with other users using django-guardian object-level permissions
     """
     permission_classes = [IsAuthenticated]
 
@@ -192,24 +190,23 @@ class FileShareView(APIView):
         except User.DoesNotExist:
             return Response({"detail": "User with this email not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Grant view permission
-        from django.contrib.contenttypes.models import ContentType
-        from django.contrib.auth.models import Permission
-        
-        content_type = ContentType.objects.get_for_model(FileVersion)
-        view_permission = Permission.objects.get(codename='view_fileversion', content_type=content_type)
-        
-        # Assign object-level permission (we'll need to implement this differently)
-        # For now, we'll just add the permission to the user
-        target_user.user_permissions.add(view_permission)
+        # Get the root file (the one to share permissions with)
+        root_file = file_version.root_file or file_version
+
+        # Grant object-level permissions using django-guardian
+        assign_perm('view_fileversion', target_user, root_file)
+        permissions_granted = ["view"]
         
         if can_edit:
-            change_permission = Permission.objects.get(codename='change_fileversion', content_type=content_type)
-            target_user.user_permissions.add(change_permission)
+            assign_perm('change_fileversion', target_user, root_file)
+            permissions_granted.append("edit")
+        else:
+            # Remove edit permission if not requested
+            remove_perm('change_fileversion', target_user, root_file)
 
         return Response({
             "message": f"File shared with {user_email}",
-            "permissions": ["view"] + (["edit"] if can_edit else [])
+            "permissions": permissions_granted
         }, status=status.HTTP_200_OK)
 
 

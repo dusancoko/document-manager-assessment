@@ -72,11 +72,13 @@ DJANGO_APPS = [
 
     "allauth",
     "allauth.account"
+
 ]
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
+    "guardian"
 ]
 
 LOCAL_APPS = [
@@ -96,6 +98,7 @@ MIGRATION_MODULES = {"sites": "propylon_document_manager.contrib.sites.migration
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",  # Add this line
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model

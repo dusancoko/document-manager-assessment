@@ -1,7 +1,11 @@
 import hashlib
 from rest_framework import serializers
-from ..models import FileVersion
 from django.contrib.auth.models import Permission
+
+# Guardian imports
+from guardian.shortcuts import get_perms
+
+from ..models import FileVersion
 
 
 class FileVersionSerializer(serializers.ModelSerializer):
@@ -43,28 +47,33 @@ class SharedFileVersionSerializer(serializers.ModelSerializer):
 
     def get_versions(self, obj):
         user = self.context['request'].user
-        all_versions = FileVersion.objects.filter(root_file=obj.root_file or obj).order_by('-version_number')
+        root_file = obj.root_file or obj
+        all_versions = FileVersion.objects.filter(root_file=root_file).order_by('-version_number')
         
-        # Filter versions based on user permissions
-        accessible_versions = []
-        for fv in all_versions:
-            if user.has_perm("file_versions.view_fileversion", fv):
-                accessible_versions.append({
+        # Only return versions if user has view permission
+        if user.has_perm("file_versions.view_fileversion", root_file):
+            return [
+                {
                     'id': fv.id,
                     'version_number': fv.version_number,
                     'virtual_path': fv.virtual_path,
-                })
-        
-        return accessible_versions
+                }
+                for fv in all_versions
+            ]
+        return []
 
     def get_permissions(self, obj):
         user = self.context['request'].user
+        root_file = obj.root_file or obj
         permissions = []
         
-        if user.has_perm("file_versions.view_fileversion", obj):
+        # Use guardian to check object-level permissions
+        user_perms = get_perms(user, root_file)
+        
+        if 'view_fileversion' in user_perms:
             permissions.append("view")
         
-        if user.has_perm("file_versions.change_fileversion", obj):
+        if 'change_fileversion' in user_perms:
             permissions.append("edit")
             
         return permissions
