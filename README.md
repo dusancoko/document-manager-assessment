@@ -1,6 +1,5 @@
 # Propylon Document Manager Assessment
 
-<div style="border: 1px solid #8253FD; padding:5px; margin-bottom: 16px; background-color:rgb(228, 220, 250);">
 <h3>Documentation</h3>
 <ul>
    <li><a href="./docs/developer_instructions.md">Developer instructions</a>
@@ -8,6 +7,8 @@
    <li><a href="./modifications.md">Project bootstrap modifications</a></li>
 </ul>
 </div>
+
+### Original Readme
 
 The Propylon Document Management Technical Assessment is a simple (and incomplete) web application consisting of a basic API backend and a React based client.  This API/client can be used as a bootstrap to implement the specific features requested in the assessment description. 
 
@@ -26,14 +27,4 @@ The client project is a [Create React App](https://create-react-app.dev/) that h
 3. `$ npm start` to start the React development server.
 
 
-#### Running client tests
-```
-npm test                    # Run all tests
-npm run test:watch         # Watch mode for development  
-npm run test:coverage      # Generate coverage report
-npm run test:ci           # CI-specific test run
-npm run lint              # Run ESLint
-make check-all            # Run full test suite
-##
-```
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
