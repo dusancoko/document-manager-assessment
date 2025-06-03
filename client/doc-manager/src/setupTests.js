@@ -1,5 +1,14 @@
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+// Mock FontAwesome
+jest.mock('@fortawesome/react-fontawesome', () => ({
+  FontAwesomeIcon: ({ icon, ...props }) => <i data-testid="fa-icon" {...props} />
+}));
+
+// Mock dayjs
+jest.mock('dayjs', () => {
+  const actualDayjs = jest.requireActual('dayjs');
+  return jest.fn(() => ({
+    format: jest.fn(() => '2024')
+  }));
+});

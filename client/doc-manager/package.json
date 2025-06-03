@@ -1,27 +1,58 @@
 {
   "name": "doc-manager",
   "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
+  "description": "Client for Document Management Assessment assignment.",
+  "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "test": "NODE_OPTIONS=--openssl-legacy-provider react-scripts test --watchAll=false",
+    "test:watch": "NODE_OPTIONS=--openssl-legacy-provider react-scripts test",
+    "test:coverage": "NODE_OPTIONS=--openssl-legacy-provider react-scripts test --coverage --watchAll=false",
+    "test:ci": "NODE_OPTIONS=--openssl-legacy-provider react-scripts test --coverage --watchAll=false --passWithNoTests --ci",
+    "test:debug": "NODE_OPTIONS=--openssl-legacy-provider node --inspect-brk node_modules/.bin/react-scripts test --runInBand",
+    "eject": "NODE_OPTIONS=--openssl-legacy-provider react-scripts eject",
+    "lint": "eslint src/ --ext .js,.jsx",
+    "lint:fix": "eslint src/ --ext .js,.jsx --fix",
+    "audit": "npm audit --audit-level high",
+    "test:summary": "./scripts/test-summary.sh"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "keywords": [
+    "propylon",
+    "assignment",
+    "assessment",
+    "document-management",
+    "react",
+    "frontend"
+  ],
+  "author": "Dusan Coko <dusan.coko@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "axios": "^1.9.0",
+    "bulma": "^1.0.4",
+    "dayjs": "^1.11.13",
+    "react": "^16.14.0",
+    "react-diff-viewer": "^3.1.1",
+    "react-dom": "^16.14.0",
+    "react-hook-form": "^7.43.9",
+    "react-router-dom": "^5.3.4"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^12.1.5",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/react-router-dom": "^5.3.3",
+    "axios-mock-adapter": "^1.21.5",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-testing-library": "^6.2.2",
+    "identity-obj-proxy": "^3.0.0",
+    "jest-junit": "^16.0.0",
+    "react-scripts": "^4.0.3"
   },
   "browserslist": {
     "production": [
@@ -33,6 +64,88 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/index.js",
+      "!src/setupTests.js",
+      "!src/**/*.test.{js,jsx}",
+      "!src/reportWebVitals.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    },
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html",
+      "cobertura"
+    ],
+    "moduleNameMapping": {
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+      "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/src/__mocks__/fileMock.js"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.js"
+    ],
+    "testEnvironment": "jsdom"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "jest": true,
+      "node": true
+    },
+    "rules": {
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "warn",
+      "no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ],
+      "no-console": [
+        "warn",
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ]
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/**/*",
+          "**/*.test.*"
+        ],
+        "env": {
+          "jest": true
+        },
+        "extends": [
+          "plugin:testing-library/react"
+        ],
+        "rules": {
+          "no-console": "off",
+          "testing-library/await-async-query": "error",
+          "testing-library/no-await-sync-query": "error",
+          "testing-library/no-debugging-utils": "warn"
+        }
+      }
     ]
   }
 }

@@ -11,3 +11,8 @@ django-model-utils  # https://github.com/jazzband/django-model-utils
 # Django REST Framework
 djangorestframework  # https://github.com/encode/django-rest-framework
 django-cors-headers  # https://github.com/adamchainz/django-cors-headers
+
+# File converters
+# ------------------------------------------------------------------------------
+pypdf # https://github.com/py-pdf/pypdf
+mammoth # https://github.com/mwilliamson/python-mammoth
