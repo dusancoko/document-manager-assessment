@@ -16,3 +16,4 @@ django-cors-headers  # https://github.com/adamchainz/django-cors-headers
 # ------------------------------------------------------------------------------
 pypdf # https://github.com/py-pdf/pypdf
 mammoth # https://github.com/mwilliamson/python-mammoth
+django-guardian
