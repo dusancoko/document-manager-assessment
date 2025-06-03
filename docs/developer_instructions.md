@@ -316,8 +316,34 @@ frontend/
 4. **Test authentication** by logging in through Django admin first
 
 
-4. **Access the application**:
+**Access the application**:
    - Frontend: `http://localhost:3000`
    - Backend Admin: `http://127.0.0.1:8001/admin`
    - API Endpoints: `http://127.0.0.1:8001/api/`
 
+#### Jest frontend test
+```
+# Install new dependencies
+npm install
+
+# Run tests once
+npm test
+
+# Run tests in watch mode  
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+
+# Run linting
+npm run lint
+
+# Fix linting issues automatically
+npm run lint:fix
+
+# Security audit
+npm run audit
+
+# CI testing
+npm run test:ci
+```
